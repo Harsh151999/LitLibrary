@@ -13,4 +13,3 @@ LitLibrary is a Python-based book management system that allows users to organiz
 
 ### Prerequisites
 - Python 3.x installed on your system.
-
