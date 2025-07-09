@@ -1,15 +1,18 @@
-# LitLibrary
+# LitLibrary 📚
 
-LitLibrary is a Python-based book management system that allows users to organize, search, and filter books by genre, author, rating, and price.
+A Python-based library management system for managing book collections.
 
 ## Features
-- **Add Books**: Create and store book entries with details like name, author, genre, rating, and price.
-- **Search Books**: Find books by genre or author using keyword searches (case-insensitive).
-- **Display All Books**: View a list of all books with their details.
-- **Highest Rated Book**: Identify the book with the highest rating.
-- **Price Filtering**: Filter books within a specified price range.
 
-## Getting Started
+- Add and manage books with author, genre, rating, and price
+- Search books by author or genre
+- Filter books by price range
+- Find highest-rated books
+- Display complete book collection
 
-### Prerequisites
-- Python 3.x installed on your system.
+## How to Use
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/LitLibrary.git
+
