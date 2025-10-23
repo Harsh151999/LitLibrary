@@ -1,4 +1,3 @@
-# Define the Book class with name, rate, price, author, and genre
 class Book:
     def __init__(self, name, rate, price, author, genre):
         self.name = name
@@ -12,88 +11,153 @@ class Book:
             f"Book Name: {self.name}\n"
             f"Author: {self.author}\n"
             f"Genre: {self.genre}\n"
-            f"Rate: {self.rate}/5\n"
-            f"Price: ${self.price}\n"
+            f"Rating: {self.rate}/5\n"
+            f"Price: ${self.price:.2f}\n"
         )
+    
+    def __str__(self):
+        return self.display_info()
+    
+    def __repr__(self):
+        return f"Book('{self.name}', {self.rate}, {self.price}, '{self.author}', '{self.genre}')"
 
-# Welcome message with LitLibrary
-print("Welcome to LitLibrary\n")
-
-# Function to create a new book
-def create_book(name, author, genre, rate, price):
-    return Book(name, rate, price, author, genre)
-
-# Function to search for books by genre or author
-def search_books(books, keyword):
-    print(f"\nSearch results for '{keyword}' in LitLibrary:")
-    found = False
-    for book in books:
-        if keyword.lower() in book.author.lower() or keyword.lower() in book.genre.lower():
+class LitLibrary:
+    def __init__(self, name="LitLibrary"):
+        self.name = name
+        self.books = []
+        self._initialize_sample_books()
+    
+    def _initialize_sample_books(self):
+        """Initialize with sample books"""
+        sample_books = [
+            Book("The Great Gatsby", 4.5, 10.99, "F. Scott Fitzgerald", "Classic"),
+            Book("1984", 4.8, 8.99, "George Orwell", "Dystopian"),
+            Book("To Kill a Mockingbird", 4.7, 12.99, "Harper Lee", "Historical Fiction"),
+            Book("The Hobbit", 4.6, 9.99, "J.R.R. Tolkien", "Fantasy"),
+            Book("Pride and Prejudice", 4.4, 7.99, "Jane Austen", "Romance")
+        ]
+        self.books.extend(sample_books)
+    
+    def add_book(self, name, author, genre, rate, price):
+        """Add a new book to the library"""
+        new_book = Book(name, rate, price, author, genre)
+        self.books.append(new_book)
+        print(f"✓ Added '{name}' to {self.name}")
+        return new_book
+    
+    def search_books(self, keyword):
+        """Search books by title, author, or genre"""
+        print(f"\n🔍 Search results for '{keyword}':")
+        found_books = []
+        
+        for book in self.books:
+            if (keyword.lower() in book.name.lower() or 
+                keyword.lower() in book.author.lower() or 
+                keyword.lower() in book.genre.lower()):
+                found_books.append(book)
+        
+        if found_books:
+            self._display_books_list(found_books)
+        else:
+            print("No matching books found.")
+        
+        return found_books
+    
+    def display_all_books(self):
+        """Display all books in the library"""
+        print(f"\n📚 All Books in {self.name} ({len(self.books)} books):")
+        self._display_books_list(self.books)
+    
+    def _display_books_list(self, books_list):
+        """Helper method to display a list of books"""
+        for i, book in enumerate(books_list, 1):
+            print(f"Book #{i}:")
             print(book.display_info())
             print("-" * 40)
-            found = True
-    if not found:
-        print("No matching books found.\n")
+    
+    def find_highest_rated(self):
+        """Find the highest rated book(s)"""
+        if not self.books:
+            return None
+        
+        max_rating = max(book.rate for book in self.books)
+        highest_rated = [book for book in self.books if book.rate == max_rating]
+        
+        print(f"\n⭐ Highest Rated Book(s) ({max_rating}/5):")
+        self._display_books_list(highest_rated)
+        return highest_rated
+    
+    def filter_by_price(self, min_price=0, max_price=float('inf')):
+        """Filter books by price range"""
+        filtered_books = [
+            book for book in self.books 
+            if min_price <= book.price <= max_price
+        ]
+        
+        price_range = f"${min_price:.2f}-${max_price:.2f}" if max_price != float('inf') else f"${min_price:.2f}+"
+        print(f"\n💰 Books in price range {price_range}:")
+        
+        if filtered_books:
+            self._display_books_list(filtered_books)
+        else:
+            print("No books found in this price range.")
+        
+        return filtered_books
+    
+    def get_library_stats(self):
+        """Get library statistics"""
+        total_books = len(self.books)
+        total_value = sum(book.price for book in self.books)
+        avg_rating = sum(book.rate for book in self.books) / total_books if total_books > 0 else 0
+        
+        print(f"\n📊 {self.name} Statistics:")
+        print(f"Total books: {total_books}")
+        print(f"Total collection value: ${total_value:.2f}")
+        print(f"Average rating: {avg_rating:.2f}/5")
+        
+        # Genre distribution
+        genres = {}
+        for book in self.books:
+            genres[book.genre] = genres.get(book.genre, 0) + 1
+        
+        print("Genre distribution:")
+        for genre, count in genres.items():
+            print(f"  {genre}: {count} book(s)")
+        
+        return {
+            'total_books': total_books,
+            'total_value': total_value,
+            'avg_rating': avg_rating,
+            'genres': genres
+        }
 
-# Function to display all books
-def display_all_books(books):
-    print("\nAll Available Books in LitLibrary:")
-    for i, book in enumerate(books, 1):
-        print(f"Book #{i}:")
-        print(book.display_info())
-        print("-" * 40)
+def main():
+    """Main function to demonstrate the library system"""
+    # Create library instance
+    library = LitLibrary()
+    
+    print("=" * 50)
+    print(f"Welcome to {library.name}!")
+    print("=" * 50)
+    
+    # Add a new programming book
+    library.add_book("Clean Code", "Robert C. Martin", "Programming", 4.9, 29.99)
+    
+    # Demonstrate searches
+    library.search_books("Programming")
+    library.search_books("Orwell")
+    
+    # Display all books
+    library.display_all_books()
+    
+    # Show highest rated
+    library.find_highest_rated()
+    
+    # Filter by price
+    library.filter_by_price(max_price=10.00)
+    
+    # Show statistics
+    library.get_library_stats()
 
-# Function to find highest rated book
-def find_highest_rated(books):
-    if not books:
-        return None
-    highest_rated = max(books, key=lambda book: book.rate)
-    return highest_rated
-
-# Function to filter books by price range
-def filter_by_price(books, min_price=0, max_price=float('inf')):
-    filtered_books = [book for book in books if min_price <= book.price <= max_price]
-    return filtered_books
-
-# Creating initial book objects
-book1 = Book("The Great Gatsby", 4.5, 10.99, "F. Scott Fitzgerald", "Classic")
-book2 = Book("1984", 4.8, 8.99, "George Orwell", "Dystopian")
-book3 = Book("To Kill a Mockingbird", 4.7, 12.99, "Harper Lee", "Historical Fiction")
-book4 = Book("The Hobbit", 4.6, 9.99, "J.R.R. Tolkien", "Fantasy")
-book5 = Book("Pride and Prejudice", 4.4, 7.99, "Jane Austen", "Romance")
-
-# Store books in a list
-books = [book1, book2, book3, book4, book5]
-
-# Simulate adding a new book
-add_more = True
-if add_more:
-    simulated_book = create_book("Clean Code", "Robert C. Martin", "Programming", 4.9, 29.99)
-    books.append(simulated_book)
-    print(f"Added new book to LitLibrary: {simulated_book.name}")
-
-# Simulate searching for a book
-search = True
-if search:
-    keyword = "Programming"  # You can change this keyword to test different searches
-    search_books(books, keyword)
-
-# Display all books
-display_all_books(books)
-
-# Show highest rated book
-highest_rated = find_highest_rated(books)
-if highest_rated:
-    print(f"\nHighest Rated Book in LitLibrary:")
-    print(highest_rated.display_info())
-    print("-" * 40)
-
-# Show books under $10
-affordable_books = filter_by_price(books, max_price=10.00)
-if affordable_books:
-    print(f"\nBooks under $10 in LitLibrary:")
-    for book in affordable_books:
-        print(f"- {book.name}: ${book.price}")
-    print()
-
-print(f"\nTotal books in LitLibrary: {len(books)}")
+if __name__ == "__main__":
+    main()
